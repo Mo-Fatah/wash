@@ -202,10 +202,13 @@ pub(crate) async fn pull_artifact(
 ) -> Result<Vec<u8>> {
     let image: Reference = url.parse()?;
 
-    if image.tag().unwrap_or("latest") == "latest" && !allow_latest {
-        bail!(
-            "Pulling artifacts with tag 'latest' is prohibited. This can be overriden with the flag --allow-latest"
-        );
+    if image.tag().unwrap_or("latest") == "latest" {
+        if !allow_latest {
+            bail!(
+                "Pulling artifacts with tag 'latest' is prohibited. This can be overriden with the flag --allow-latest"
+            );
+        }
+        bail!("Artifact not found");
     };
 
     let mut client = Client::new(ClientConfig {
